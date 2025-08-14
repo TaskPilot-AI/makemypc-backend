@@ -1,0 +1,11 @@
+fastapi[all]
+websockets
+langchain
+langchain-google-genai
+duckduckgo-search
+python-dotenv
+uvicorn
+pydantic
+structlog
+tenacity
+ddgs
