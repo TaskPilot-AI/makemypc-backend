@@ -290,109 +290,109 @@ async def general_exception_handler(request, exc: Exception):
 
 
 # Development HTML client
-@app.get("/client")
-async def get_client():
-    """Serve a simple HTML client for testing (development only)."""
-    html_content = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>PC Build Assistant</title>
-        <style>
-            body { font-family: Arial, sans-serif; margin: 40px; }
-            .container { max-width: 800px; margin: 0 auto; }
-            .messages { height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
-            .message { margin: 5px 0; }
-            .log { color: #666; }
-            .error { color: red; }
-            .final { color: green; font-weight: bold; }
-            input[type="text"] { width: 70%; padding: 5px; }
-            button { padding: 5px 10px; }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>PC Build Assistant</h1>
-            <div id="messages" class="messages"></div>
-            <div>
-                <input type="text" id="queryInput" placeholder="Ask about PC builds..." />
-                <button onclick="sendQuery()">Send</button>
-                <button onclick="clearMessages()">Clear</button>
-            </div>
-            <p><strong>Status:</strong> <span id="status">Disconnected</span></p>
-        </div>
+# @app.get("/client")
+# async def get_client():
+#     """Serve a simple HTML client for testing (development only)."""
+#     html_content = """
+#     <!DOCTYPE html>
+#     <html>
+#     <head>
+#         <title>PC Build Assistant</title>
+#         <style>
+#             body { font-family: Arial, sans-serif; margin: 40px; }
+#             .container { max-width: 800px; margin: 0 auto; }
+#             .messages { height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+#             .message { margin: 5px 0; }
+#             .log { color: #666; }
+#             .error { color: red; }
+#             .final { color: green; font-weight: bold; }
+#             input[type="text"] { width: 70%; padding: 5px; }
+#             button { padding: 5px 10px; }
+#         </style>
+#     </head>
+#     <body>
+#         <div class="container">
+#             <h1>PC Build Assistant</h1>
+#             <div id="messages" class="messages"></div>
+#             <div>
+#                 <input type="text" id="queryInput" placeholder="Ask about PC builds..." />
+#                 <button onclick="sendQuery()">Send</button>
+#                 <button onclick="clearMessages()">Clear</button>
+#             </div>
+#             <p><strong>Status:</strong> <span id="status">Disconnected</span></p>
+#         </div>
 
-        <script>
-            const messages = document.getElementById('messages');
-            const status = document.getElementById('status');
-            const queryInput = document.getElementById('queryInput');
+#         <script>
+#             const messages = document.getElementById('messages');
+#             const status = document.getElementById('status');
+#             const queryInput = document.getElementById('queryInput');
             
-            let ws = null;
+#             let ws = null;
             
-            function connect() {
-                ws = new WebSocket(`ws://${window.location.host}/ws`);
+#             function connect() {
+#                 ws = new WebSocket(`ws://${window.location.host}/ws`);
                 
-                ws.onopen = function() {
-                    status.textContent = 'Connected';
-                    status.style.color = 'green';
-                };
+#                 ws.onopen = function() {
+#                     status.textContent = 'Connected';
+#                     status.style.color = 'green';
+#                 };
                 
-                ws.onclose = function() {
-                    status.textContent = 'Disconnected';
-                    status.style.color = 'red';
-                };
+#                 ws.onclose = function() {
+#                     status.textContent = 'Disconnected';
+#                     status.style.color = 'red';
+#                 };
                 
-                ws.onmessage = function(event) {
-                    const data = JSON.parse(event.data);
-                    displayMessage(data);
-                };
+#                 ws.onmessage = function(event) {
+#                     const data = JSON.parse(event.data);
+#                     displayMessage(data);
+#                 };
                 
-                ws.onerror = function(error) {
-                    displayMessage({type: 'error', content: 'WebSocket error: ' + error});
-                };
-            }
+#                 ws.onerror = function(error) {
+#                     displayMessage({type: 'error', content: 'WebSocket error: ' + error});
+#                 };
+#             }
             
-            function displayMessage(data) {
-                const div = document.createElement('div');
-                div.className = `message ${data.type}`;
+#             function displayMessage(data) {
+#                 const div = document.createElement('div');
+#                 div.className = `message ${data.type}`;
                 
-                const timestamp = new Date().toLocaleTimeString();
-                div.innerHTML = `<small>[${timestamp}] ${data.type}:</small> ${data.content}`;
+#                 const timestamp = new Date().toLocaleTimeString();
+#                 div.innerHTML = `<small>[${timestamp}] ${data.type}:</small> ${data.content}`;
                 
-                messages.appendChild(div);
-                messages.scrollTop = messages.scrollHeight;
-            }
+#                 messages.appendChild(div);
+#                 messages.scrollTop = messages.scrollHeight;
+#             }
             
-            function sendQuery() {
-                const query = queryInput.value.trim();
-                if (!query || !ws || ws.readyState !== WebSocket.OPEN) {
-                    return;
-                }
+#             function sendQuery() {
+#                 const query = queryInput.value.trim();
+#                 if (!query || !ws || ws.readyState !== WebSocket.OPEN) {
+#                     return;
+#                 }
                 
-                ws.send(JSON.stringify({query: query}));
-                queryInput.value = '';
+#                 ws.send(JSON.stringify({query: query}));
+#                 queryInput.value = '';
                 
-                displayMessage({type: 'user', content: query});
-            }
+#                 displayMessage({type: 'user', content: query});
+#             }
             
-            function clearMessages() {
-                messages.innerHTML = '';
-            }
+#             function clearMessages() {
+#                 messages.innerHTML = '';
+#             }
             
-            // Enter key support
-            queryInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendQuery();
-                }
-            });
+#             // Enter key support
+#             queryInput.addEventListener('keypress', function(e) {
+#                 if (e.key === 'Enter') {
+#                     sendQuery();
+#                 }
+#             });
             
-            // Auto-connect
-            connect();
-        </script>
-    </body>
-    </html>
-    """
-    return HTMLResponse(content=html_content)
+#             // Auto-connect
+#             connect();
+#         </script>
+#     </body>
+#     </html>
+#     """
+#     return HTMLResponse(content=html_content)
 
 
 if __name__ == "__main__":
